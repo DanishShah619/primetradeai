@@ -1,4 +1,4 @@
-import { TaskStatus } from '../pages/Dashboard';
+import type { TaskStatus } from '../pages/Dashboard';
 
 interface Task {
   id: string;
