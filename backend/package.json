@@ -1,0 +1,41 @@
+{
+  "name": "primetrade-api",
+  "version": "1.0.0",
+  "description": "Scalable REST API with JWT Auth & RBAC",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^5",
+    "bcrypt": "^5",
+    "dotenv": "^16",
+    "cors": "^2",
+    "express": "^4",
+    "express-rate-limit": "^7",
+    "helmet": "^7",
+    "jsonwebtoken": "^9",
+    "pino": "^8",
+    "pino-pretty": "^11",
+    "swagger-jsdoc": "^6",
+    "swagger-ui-express": "^5",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "*",
+    "@types/cors": "*",
+    "@types/express": "*",
+    "@types/jsonwebtoken": "*",
+    "@types/node": "*",
+    "@types/swagger-jsdoc": "*",
+    "@types/swagger-ui-express": "*",
+    "prisma": "^5",
+    "ts-node-dev": "^2",
+    "typescript": "^5"
+  }
+}
