@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+import { ZodTypeAny, ZodError } from 'zod';
 import { ApiError } from '../utils/ApiError';
 
 type RequestPart = 'body' | 'query' | 'params';
 
 export const validate =
-  (schema: AnyZodObject, part: RequestPart = 'body') =>
+  (schema: ZodTypeAny, part: RequestPart = 'body') =>
   (req: Request, _res: Response, next: NextFunction) => {
     try {
       req[part] = schema.parse(req[part]);

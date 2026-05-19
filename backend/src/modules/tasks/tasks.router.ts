@@ -2,9 +2,9 @@ import { Router } from 'express';
 import { authenticate } from '../../middlewares/authenticate';
 import { authorize } from '../../middlewares/authorize';
 import { validate } from '../../middlewares/validate';
+import { cacheMiddleware } from '../../middlewares/cache';
 import { CreateTaskDto, UpdateTaskDto, ListTasksQuery } from './tasks.dto';
 import * as ctrl from './tasks.controller';
-import { Role } from '@prisma/client';
 
 export const tasksRouter = Router();
 
@@ -39,7 +39,7 @@ tasksRouter.use(authenticate);
  *       401:
  *         description: Unauthorized
  */
-tasksRouter.get('/', validate(ListTasksQuery, 'query'), ctrl.list);
+tasksRouter.get('/', validate(ListTasksQuery, 'query'), cacheMiddleware('tasks'), ctrl.list);
 
 /**
  * @openapi
@@ -61,7 +61,7 @@ tasksRouter.get('/', validate(ListTasksQuery, 'query'), ctrl.list);
  *       404:
  *         description: Not found
  */
-tasksRouter.get('/:id', ctrl.get);
+tasksRouter.get('/:id', cacheMiddleware('tasks'), ctrl.get);
 
 /**
  * @openapi
@@ -131,4 +131,4 @@ tasksRouter.patch('/:id', validate(UpdateTaskDto), ctrl.update);
  *       404:
  *         description: Not found
  */
-tasksRouter.delete('/:id', authorize(Role.ADMIN, Role.USER), ctrl.remove);
+tasksRouter.delete('/:id', authorize('ADMIN', 'USER'), ctrl.remove);

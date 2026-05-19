@@ -1,7 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import rateLimit from 'express-rate-limit';
+import { globalRateLimiter } from './middlewares/rateLimit';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { authRouter } from './modules/auth/auth.router';
@@ -14,7 +14,7 @@ export const app = express();
 // Security
 app.use(helmet());
 app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100, standardHeaders: true, legacyHeaders: false }));
+app.use(globalRateLimiter);
 app.use(express.json());
 
 // Health check

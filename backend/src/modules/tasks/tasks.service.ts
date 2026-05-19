@@ -1,6 +1,7 @@
 import { prisma } from '../../prisma';
 import { ApiError } from '../../utils/ApiError';
-import { Role } from '@prisma/client';
+import { invalidateUserCache } from '../../middlewares/cache';
+import { Role } from '../../types/domain';
 import type { CreateTaskInput, UpdateTaskInput, ListTasksQueryInput } from './tasks.dto';
 
 export async function listTasks(
@@ -11,7 +12,7 @@ export async function listTasks(
   const { status, page, limit } = query;
   const where = {
     // Admin sees all tasks; regular user sees only their own
-    ...(role !== Role.ADMIN && { userId }),
+    ...(role !== 'ADMIN' && { userId }),
     ...(status && { status }),
   };
 
@@ -34,12 +35,14 @@ export async function listTasks(
 export async function getTask(id: string, userId: string, role: Role) {
   const task = await prisma.task.findUnique({ where: { id } });
   if (!task) throw ApiError.notFound('Task not found');
-  if (role !== Role.ADMIN && task.userId !== userId) throw ApiError.forbidden();
+  if (role !== 'ADMIN' && task.userId !== userId) throw ApiError.forbidden();
   return task;
 }
 
 export async function createTask(userId: string, input: CreateTaskInput) {
-  return prisma.task.create({ data: { ...input, userId } });
+  const task = await prisma.task.create({ data: { ...input, userId } });
+  await invalidateUserCache('tasks', userId);
+  return task;
 }
 
 export async function updateTask(
@@ -49,10 +52,14 @@ export async function updateTask(
   input: UpdateTaskInput,
 ) {
   await getTask(id, userId, role); // ownership/existence check
-  return prisma.task.update({ where: { id }, data: input });
+  const task = await prisma.task.update({ where: { id }, data: input });
+  // If admin updates a task, invalidate the actual owner's cache
+  await invalidateUserCache('tasks', task.userId);
+  return task;
 }
 
 export async function deleteTask(id: string, userId: string, role: Role) {
-  await getTask(id, userId, role);
+  const task = await getTask(id, userId, role);
   await prisma.task.delete({ where: { id } });
+  await invalidateUserCache('tasks', task.userId);
 }

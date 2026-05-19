@@ -1,6 +1,7 @@
-import { Role } from '@prisma/client';
+import { Role } from '../types/domain';
 import { Request, Response, NextFunction } from 'express';
 import { ApiError } from '../utils/ApiError';
+
 
 export const authorize =
   (...roles: Role[]) =>

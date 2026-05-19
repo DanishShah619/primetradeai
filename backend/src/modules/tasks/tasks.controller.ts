@@ -17,7 +17,7 @@ export const list = async (req: Request, res: Response, next: NextFunction) => {
 
 export const get = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const task = await tasksService.getTask(req.params.id, req.user!.id, req.user!.role);
+    const task = await tasksService.getTask(req.params.id as string, req.user!.id, req.user!.role);
     sendSuccess(res, { data: task });
   } catch (err) {
     next(err);
@@ -36,7 +36,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
 export const update = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const task = await tasksService.updateTask(
-      req.params.id,
+      req.params.id as string,
       req.user!.id,
       req.user!.role,
       req.body,
@@ -49,7 +49,7 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
 
 export const remove = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await tasksService.deleteTask(req.params.id, req.user!.id, req.user!.role);
+    await tasksService.deleteTask(req.params.id as string, req.user!.id, req.user!.role);
     sendSuccess(res, { data: { message: 'Task deleted' } });
   } catch (err) {
     next(err);

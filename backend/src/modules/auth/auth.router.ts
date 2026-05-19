@@ -3,6 +3,7 @@ import { validate } from '../../middlewares/validate';
 import { authenticate } from '../../middlewares/authenticate';
 import { RegisterDto, LoginDto, RefreshDto } from './auth.dto';
 import * as ctrl from './auth.controller';
+import { authRateLimiter } from '../../middlewares/rateLimit';
 
 export const authRouter = Router();
 
@@ -27,7 +28,7 @@ export const authRouter = Router();
  *       409:
  *         description: Email already registered
  */
-authRouter.post('/register', validate(RegisterDto), ctrl.registerHandler);
+authRouter.post('/register', authRateLimiter, validate(RegisterDto), ctrl.registerHandler);
 
 /**
  * @openapi
@@ -48,7 +49,7 @@ authRouter.post('/register', validate(RegisterDto), ctrl.registerHandler);
  *       401:
  *         description: Invalid credentials
  */
-authRouter.post('/login', validate(LoginDto), ctrl.loginHandler);
+authRouter.post('/login', authRateLimiter, validate(LoginDto), ctrl.loginHandler);
 
 /**
  * @openapi
